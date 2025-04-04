@@ -17,9 +17,7 @@ export interface TodoState {
 const FilterLinks = ({ activeFilter }: { activeFilter: TodoState["activeFilter"] }) => {
   const onClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault();
-    const url = new URL(window.location.href);
-    url.searchParams.set(name.filter, e.currentTarget.dataset[name.filter] ?? "");
-    window.history.pushState(null, "", url.search);
+    window.history.pushState(null, "", e.currentTarget.href);
   };
   return Object.values(filter).map((filter) => (
     <Link
@@ -30,7 +28,6 @@ const FilterLinks = ({ activeFilter }: { activeFilter: TodoState["activeFilter"]
           [name.filter]: filter,
         },
       }}
-      data-filter={filter}
       onClick={onClick}
     >
       {filter.toUpperCase()}
