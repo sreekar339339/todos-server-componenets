@@ -44,8 +44,6 @@ export const todoAction = async (
   const intent = formData.get(name.intent) as keyof typeof actions;
   const data = formData.getAll(name.data) as string[];
   await actions[intent](data);
-  // This will only trigger a re-render of components that depend on the todo data
-  // Only the changed JSX will be streamed to the client
   revalidatePath("/");
   return {
 		message: "success"
