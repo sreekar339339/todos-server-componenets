@@ -1,19 +1,172 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+*,
+::after,
+::before {
+  transition: opacity 0.2s;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@keyframes spinner {
+  to {
+    rotate: 360deg;
+  }
 }
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #ccc;
+  border-top-color: #000;
+  border-radius: 50%;
+  opacity: 0;
+  &[data-pending="true"] {
+    opacity: 1;
+    animation: spinner 600ms linear infinite;
+  }
+}
+
+.todo-list {
+  max-width: 640px;
+  margin: auto;
+  position: relative;
+
+  > :not(:last-child) {
+    margin-bottom: 8px;
+  }
+
+  input[aria-label="create todo"] {
+    width: 100%;
+    padding: 4px;
+    font-size: large;
+  }
+
+  div[data-error] {
+    visibility: hidden;
+    text-align: center;
+    &[data-error="true"] {
+      visibility: visible;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.todo-list-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  span:first-child {
+    position: absolute;
+    left: 0;
+  }
+  button, a {
+    background: none;
+    border: none;
+    color: buttontext;
+    text-decoration: none;
+    &[data-selected="true"] {
+      text-decoration: underline;
+    }
+    &:not(:last-child) {
+      margin-right: 8px;
+    }
+  }
+  .spinner {
+    position: absolute;
+    right: 0;
+  }
+}
+
+.todo-list-item {
+  &:not(:last-child) {
+    margin-bottom: 8px;
+  }
+  border: 1px solid black;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  button[aria-label*="check todo"] {
+    border: 1px solid black;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    &::before {
+      content: attr(data-check-mark);
+      opacity: 0;
+    }
+    &[data-completed="true"]::before {
+      opacity: 1;
+    }
+    &[data-completed="true"][data-active="true"]::before {
+      opacity: 0;
+    }
+    &[data-completed="false"][data-active="true"]::before {
+      opacity: 1;
+    }
+  }
+  form {
+    display: flex;
+    align-items: center;
+    span {
+      flex: 1 0 0;
+      overflow-wrap: anywhere;
+      &:has(+ .text-updater[open]) {
+        display: none;
+      }
+    }
+  }
+}
+
+.text-updater {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 8px;
+  &[open] {
+    flex: 1 0 0;
+  }
+  summary {
+    grid-column: 2;
+    list-style: none;
+    background-color: buttonface;
+    color: buttontext;
+    padding-block: 1.5px;
+    padding-inline: 6px;
+    border: 1px outset buttonborder;
+    border-radius: 2px;
+    cursor: default;
+    flex-shrink: 0;
+    -webkit-user-select: none;
+    user-select: none;
+    text-align: center;
+    font-size: 14px;
+    &::-webkit-details-marker {
+      display: none;
+    }
+    [open] &::before {
+      content: attr(data-on-open-prefix);
+    }
+  }
+  fieldset {
+    grid-column: 1;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    outline: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    input {
+      flex: 1 0 0;
+      font-size: medium;
+      padding: 2px;
+      height: max-content;
+    }
+  }
+}
+
