@@ -32,7 +32,7 @@ const actions = {
     return await db.insert(TodosTable).values({ text, userId: 3 });
   },
 } satisfies Record<
-  Exclude<keyof typeof intent, "filter">,
+  keyof typeof intent,
   (data: string[]) => Promise<RowList<never[]>>
 >;
 
@@ -48,6 +48,6 @@ export const todoAction = async (
   // Only the changed JSX will be streamed to the client
   revalidatePath("/");
   return {
-    success: true,
-  };
+		message: "success"
+	}; 
 };

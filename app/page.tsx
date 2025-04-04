@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { TodosTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
+export const dynamic = "force-dynamic"
+
 export default async function Home() {
   const todos = await db
     .select({

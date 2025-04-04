@@ -4,7 +4,6 @@ import { useActionState } from "react";
 import { TodoRecord } from "@/lib/db/schema";
 import { todoAction } from "@/app/actions";
 import { filter, intent, name } from "@/app/constants";
-import { serializeError } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { MouseEventHandler } from "react";
@@ -51,8 +50,7 @@ const read = (todos: TodoState["todos"], activeFilter: TodoState["activeFilter"]
 };
 
 export type TodoActionResult = {
-  success: boolean;
-  error?: ReturnType<typeof serializeError>;
+  message: string;
 } | null;
 
 interface TodosProps {
@@ -77,8 +75,8 @@ export default function Todos({ todos }: TodosProps) {
         <input aria-label="create todo" name={name.data} />
         <input hidden name={name.intent} value={intent.create} type="submit" />
       </form>
-      <div data-error={Boolean(actionResult?.error)}>
-        {actionResult?.error?.name}: {actionResult?.error?.message}
+      <div data-error={Boolean(actionResult?.message)}>
+        {actionResult?.message}
       </div>
       <ul>
         {filtered.map((todo) => (
