@@ -62,7 +62,7 @@
     position: absolute;
     left: 0;
   }
-  button, a {
+  a {
     background: none;
     border: none;
     color: buttontext;
@@ -169,4 +169,3 @@
     }
   }
 }
-

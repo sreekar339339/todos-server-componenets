@@ -7,53 +7,38 @@ import { filter, intent, name } from "@/app/constants";
 import { serializeError } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { MouseEventHandler } from "react";
 
 export interface TodoState {
   todos: Pick<TodoRecord, "id" | "text" | "completed">[];
   activeFilter: keyof typeof filter;
 }
 
-const Filters = ({
-  activeFilter,
-}: {
-  activeFilter: TodoState["activeFilter"];
-}) =>
-  Object.values(filter).map((filter) => (
-    <button
-      key={filter}
-      data-selected={filter === activeFilter}
-      name={name.filter}
-      value={filter}
-    >
-      {filter.toUpperCase()}
-    </button>
-  ));
-
-
-const FilterLinks = ({
-  activeFilter,
-}: {
-  activeFilter: TodoState["activeFilter"];
-}) =>
-  Object.values(filter).map((filter) => (
+const FilterLinks = ({ activeFilter }: { activeFilter: TodoState["activeFilter"] }) => {
+  const onClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.preventDefault();
+    const url = new URL(window.location.href);
+    url.searchParams.set(name.filter, e.currentTarget.dataset[name.filter] ?? "");
+    window.history.pushState(null, "", url.search);
+  };
+  return Object.values(filter).map((filter) => (
     <Link
       key={filter}
       data-selected={filter === activeFilter}
       href={{
-        pathname: '/',
         query: {
-          [name.filter]: filter
-        }
+          [name.filter]: filter,
+        },
       }}
+      data-filter={filter}
+      onClick={onClick}
     >
       {filter.toUpperCase()}
     </Link>
   ));
+};
 
-const read = (
-  todos: TodoState["todos"],
-  activeFilter: TodoState["activeFilter"]
-) => {
+const read = (todos: TodoState["todos"], activeFilter: TodoState["activeFilter"]) => {
   const result = { filtered: [] as TodoState["todos"], activeCount: 0 };
   for (const todo of todos) {
     if (
@@ -79,9 +64,8 @@ interface TodosProps {
 
 export default function Todos({ todos }: TodosProps) {
   const [actionResult, action, pending] = useActionState(todoAction, null);
-  const activeFilter =
-    (useSearchParams().get(name.filter) as TodoState["activeFilter"] | null) ??
-    filter.all;
+  const activeFilter = (useSearchParams().get(name.filter) ??
+    filter.all) as TodoState["activeFilter"];
   console.log("Todos", { actionResult, todos, activeFilter });
 
   const { filtered, activeCount } = read(todos, activeFilter);
@@ -89,15 +73,8 @@ export default function Todos({ todos }: TodosProps) {
     <main className="todo-list">
       <nav className="todo-list-nav">
         <span>{activeCount} active left</span>
-        {/* <form action="/" method="GET">
-          <Filters activeFilter={activeFilter} />
-        </form> */}
         <FilterLinks activeFilter={activeFilter} />
-        <span
-          data-pending={pending}
-          className="spinner"
-          aria-label="spinner"
-        ></span>
+        <span data-pending={pending} className="spinner" aria-label="spinner"></span>
       </nav>
       <form action={action}>
         <input aria-label="create todo" name={name.data} />
@@ -171,12 +148,7 @@ function Deleter({ id }: DeleterProps) {
   const { pending } = useFormStatus();
   return (
     <>
-      <button
-        name={name.intent}
-        value={intent.delete}
-        aria-label="delete todo"
-        disabled={pending}
-      >
+      <button name={name.intent} value={intent.delete} aria-label="delete todo" disabled={pending}>
         X
       </button>
       <input hidden readOnly name={name.data} value={id} />

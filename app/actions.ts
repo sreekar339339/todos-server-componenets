@@ -25,9 +25,7 @@ const actions = {
   },
   async delete(data) {
     const [id] = data;
-    return await db
-      .delete(TodosTable)
-      .where(and(eq(TodosTable.id, id), eq(TodosTable.userId, 3)));
+    return await db.delete(TodosTable).where(and(eq(TodosTable.id, id), eq(TodosTable.userId, 3)));
   },
   async create(data) {
     const [text] = data;
